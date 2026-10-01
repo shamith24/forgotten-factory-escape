@@ -49,7 +49,7 @@ export function Cutscene({ onPhase }: { onPhase: (p: CinePhase) => void }) {
 
     const wide = new THREE.Vector3(4.2, 4.6, 4.2);
     const dollCam = new THREE.Vector3(-0.85, 1.3, 0.95);
-    const turnCam = new THREE.Vector3(-1.2, 1.5, 1.6);
+    const turnCam = new THREE.Vector3(-1.9, 1.5, 4.2);
 
     if (t < 3) {
       set("intro");
@@ -158,10 +158,10 @@ export function CreatureArm() {
     const k = smooth((t - 8.3) / 3);
     const w = clock.elapsedTime;
     // slide in through the window (window faces -z into the room)
-    root.current.position.set(WINDOW_POS.x, WINDOW_POS.y + 0.1, WINDOW_POS.z + 1.2 - k * 1.6);
-    if (j1.current) j1.current.rotation.x = -0.5 + k * 0.9 + Math.sin(w * 3) * 0.04;
-    if (j2.current) j2.current.rotation.x = -1.2 + k * 1.0 + Math.sin(w * 4) * 0.05;
-    if (j3.current) j3.current.rotation.x = -0.9 + k * 0.6;
+    root.current.position.set(WINDOW_POS.x, WINDOW_POS.y - 0.05, WINDOW_POS.z + 1.4 - k * 2.2);
+    if (j1.current) j1.current.rotation.x = 0.25 - k * 0.35 + Math.sin(w * 3) * 0.04;
+    if (j2.current) j2.current.rotation.x = 0.7 - k * 0.95 + Math.sin(w * 4) * 0.05;
+    if (j3.current) j3.current.rotation.x = 0.6 - k * 0.9;
     if (fingers.current) fingers.current.children.forEach((f, i) => (f.rotation.x = 0.3 + Math.sin(w * 6 + i) * 0.35 * k));
   });
 
@@ -183,6 +183,7 @@ export function CreatureArm() {
 
   return (
     <group ref={root} visible={false}>
+      <pointLight position={[0.4, 0.6, -1.8]} color="#9fb4ff" intensity={4} distance={4} />
       <group ref={j1}>
         {seg(0.9, 0.13)}
         <group ref={j2} position={[0, 0, -0.95]}>
