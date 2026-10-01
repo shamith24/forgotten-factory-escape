@@ -230,7 +230,7 @@ export function BrokenWindow() {
         <meshBasicMaterial color="#0b1424" />
       </mesh>
       {[[0, 0.63, 1.75, 0.08], [0, -0.63, 1.75, 0.08], [-0.84, 0, 0.08, 1.3], [0.84, 0, 0.08, 1.3], [0, 0, 0.05, 1.2]].map(
-        ([x, y, w, h], i) => (
+        ([x = 0, y = 0, w = 0, h = 0], i) => (
           <mesh key={i} position={[x, y, 0.02]} castShadow>
             <boxGeometry args={[w, h, 0.08]} />
             <meshStandardMaterial color={frame} roughness={0.9} />

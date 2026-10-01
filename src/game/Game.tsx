@@ -43,6 +43,7 @@ export default function Game() {
     return () => window.removeEventListener("keydown", h);
   }, [near, inCutscene]);
 
+  useEffect(() => { if (location.search.includes("cinetest")) setCollected(true); }, []);
   const ended = phase === "end";
 
   return (
