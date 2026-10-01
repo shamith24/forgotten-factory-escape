@@ -238,7 +238,7 @@ export function BrokenWindow() {
         ),
       )}
       {/* jagged glass shards */}
-      {[[-0.6, 0.45, 0.4], [0.55, -0.4, 2.5], [0.62, 0.42, 3.6], [-0.55, -0.45, 1.2]].map(([x, y, r], i) => (
+      {[[-0.6, 0.45, 0.4], [0.55, -0.4, 2.5], [0.62, 0.42, 3.6], [-0.55, -0.45, 1.2]].map(([x = 0, y = 0, r = 0], i) => (
         <mesh key={i} position={[x, y, 0.01]} rotation-z={r}>
           <circleGeometry args={[0.2, 3]} />
           <meshStandardMaterial color="#8fb3c9" transparent opacity={0.35} roughness={0.05} metalness={0.3} />

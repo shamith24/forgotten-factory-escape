@@ -128,7 +128,7 @@ export function Room({ collected }: { collected: boolean }) {
         [0, H / 2, S / 2, Math.PI],
         [-S / 2, H / 2, 0, Math.PI / 2],
         [S / 2, H / 2, 0, -Math.PI / 2],
-      ].map(([x, y, z, r], i) => (
+      ].map(([x = 0, y = 0, z = 0, r = 0], i) => (
         <mesh key={i} position={[x, y, z]} rotation-y={r} receiveShadow material={mats.wall}>
           <planeGeometry args={[S, H]} />
         </mesh>
@@ -152,7 +152,7 @@ export function Room({ collected }: { collected: boolean }) {
         <mesh position={[0, 0.78, 0]} castShadow receiveShadow material={mats.wood}>
           <boxGeometry args={[2.2, 0.08, 1.1]} />
         </mesh>
-        {[[-1, -0.45], [1, -0.45], [-1, 0.45], [1, 0.45]].map(([x, z], i) => (
+        {[[-1, -0.45], [1, -0.45], [-1, 0.45], [1, 0.45]].map(([x = 0, z = 0], i) => (
           <mesh key={i} position={[x, 0.37, z]} castShadow material={mats.wood}>
             <boxGeometry args={[0.08, 0.74, 0.08]} />
           </mesh>
@@ -170,7 +170,7 @@ export function Room({ collected }: { collected: boolean }) {
           <meshStandardMaterial color="#0a1a10" emissive="#0f3a1a" emissiveIntensity={0.6} />
         </mesh>
         {/* scattered papers */}
-        {[[0.4, 0.2, 0.4], [0.7, -0.25, -0.6], [-0.2, 0.35, 1.2]].map(([x, z, r], i) => (
+        {[[0.4, 0.2, 0.4], [0.7, -0.25, -0.6], [-0.2, 0.35, 1.2]].map(([x = 0, z = 0, r = 0], i) => (
           <mesh key={i} position={[x, 0.825, z]} rotation={[-Math.PI / 2, 0, r]}>
             <planeGeometry args={[0.21, 0.29]} />
             <meshStandardMaterial color="#cfc6a8" roughness={1} />

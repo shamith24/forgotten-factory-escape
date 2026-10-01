@@ -40,10 +40,10 @@ export function Player({ flashlightOn, onLock, disabled = false }: { flashlightO
     fwd.normalize();
     const right = new THREE.Vector3().crossVectors(fwd, camera.up).normalize();
     const move = new THREE.Vector3();
-    if (k.KeyW) move.add(fwd);
-    if (k.KeyS) move.sub(fwd);
-    if (k.KeyD) move.add(right);
-    if (k.KeyA) move.sub(right);
+    if (k["KeyW"]) move.add(fwd);
+    if (k["KeyS"]) move.sub(fwd);
+    if (k["KeyD"]) move.add(right);
+    if (k["KeyA"]) move.sub(right);
     const p = camera.position;
     if (move.lengthSq() > 0) {
       move.normalize().multiplyScalar(SPEED * dt);
