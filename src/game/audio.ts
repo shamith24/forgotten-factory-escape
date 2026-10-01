@@ -1,117 +1,120 @@
-import * as THREE from "three";
+/**
+ * Deep ambient drone audio using the standard browser Web Audio API.
+ * No procedural static or high-pitched noise — just a low 60Hz rumble
+ * with subtle harmonic layers for an ominous industrial atmosphere.
+ */
 
-/** Procedurally synthesized horror audio routed through a THREE.AudioListener on the camera. */
-let listener: THREE.AudioListener | null = null;
-let musicBox: THREE.Audio | null = null;
+let ctx: AudioContext | null = null;
+let masterGain: GainNode | null = null;
+let droneNodes: AudioNode[] = [];
 
-const rand = () => Math.random() * 2 - 1;
-
-function buffer(ctx: AudioContext, seconds: number, fill: (d: Float32Array, sr: number) => void) {
-  const sr = ctx.sampleRate;
-  const b = ctx.createBuffer(1, Math.floor(sr * seconds), sr);
-  fill(b.getChannelData(0), sr);
-  return b;
-}
-
-function humBuffer(ctx: AudioContext) {
-  return buffer(ctx, 8, (d, sr) => {
-    let lp = 0;
-    let lp2 = 0;
-    for (let i = 0; i < d.length; i++) {
-      const t = i / sr;
-      // electrical hum (whole Hz so it loops seamlessly over 8s)
-      const hum = Math.sin(2 * Math.PI * 50 * t) * 0.35 + Math.sin(2 * Math.PI * 100 * t) * 0.15 + Math.sin(2 * Math.PI * 150 * t) * 0.05;
-      // howling wind: low-passed noise with slow swell
-      lp += (rand() - lp) * 0.02;
-      lp2 += (lp - lp2) * 0.05;
-      const swell = 0.6 + 0.4 * Math.sin((2 * Math.PI * t) / 8) * Math.sin((2 * Math.PI * t * 3) / 8);
-      d[i] = hum * 0.5 + lp2 * 6 * swell;
-    }
-  });
-}
-
-function breathBuffer(ctx: AudioContext) {
-  return buffer(ctx, 4.5, (d, sr) => {
-    let bp = 0;
-    let prev = 0;
-    for (let i = 0; i < d.length; i++) {
-      const t = i / sr;
-      // inhale 0-1.6s, exhale 2-3.8s
-      let env = 0;
-      if (t < 1.6) env = Math.sin((Math.PI * t) / 1.6) ** 2 * 0.7;
-      else if (t > 2 && t < 3.8) env = Math.sin((Math.PI * (t - 2)) / 1.8) ** 1.5;
-      // breathy band-pass noise, darker on exhale
-      const n = rand();
-      const k = t < 1.8 ? 0.25 : 0.12;
-      bp += (n - bp) * k;
-      const hp = bp - prev;
-      prev = bp;
-      d[i] = (bp * 0.6 + hp * 0.8) * env * 0.9;
-    }
-  });
-}
-
-function musicBoxBuffer(ctx: AudioContext) {
-  // "Pop goes the weasel"-esque minor lullaby, pitched up and detuned
-  const notes = [76, 81, 81, 83, 83, 84, 88, 84, 81, 76, 81, 81, 83, 83, 84, 81, 0, 80, 77, 76];
-  const step = 0.28;
-  return buffer(ctx, notes.length * step + 1.5, (d, sr) => {
-    notes.forEach((n, idx) => {
-      if (!n) return;
-      const wobble = 1 + rand() * 0.012;
-      const f = 440 * Math.pow(2, (n - 69) / 12) * wobble;
-      const start = Math.floor(idx * step * sr);
-      const len = Math.floor(1.4 * sr);
-      for (let i = 0; i < len && start + i < d.length; i++) {
-        const t = i / sr;
-        const env = Math.exp(-t * 4.5);
-        const s = Math.sin(2 * Math.PI * f * t) + 0.4 * Math.sin(2 * Math.PI * f * 2.01 * t) * Math.exp(-t * 9) + 0.15 * Math.sin(2 * Math.PI * f * 3.98 * t);
-        d[start + i]! += s * env * 0.35;
-      }
-    });
-    // distortion + bitcrush
-    for (let i = 0; i < d.length; i++) {
-      const crushed = Math.round(d[i]! * 12) / 12;
-      d[i] = Math.tanh(crushed * 2.2) * 0.6 + rand() * 0.008;
-    }
-  });
-}
-
-/** Must be called from a user gesture (START GAME click). */
-export function startAudio() {
-  if (listener) {
-    void listener.context.resume();
-    return listener;
+/** Must be called from a user gesture (ENTER FACTORY click). */
+export function startAudio(): AudioContext | null {
+  if (ctx) {
+    void ctx.resume();
+    return ctx;
   }
-  listener = new THREE.AudioListener();
-  const ctx = listener.context;
+
+  const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+  if (!AC) return null;
+
+  ctx = new AC();
   void ctx.resume();
 
-  const hum = new THREE.Audio(listener);
-  hum.setBuffer(humBuffer(ctx));
-  hum.setLoop(true);
-  hum.setVolume(0.12);
-  hum.play();
+  masterGain = ctx.createGain();
+  masterGain.gain.value = 0.0;
+  masterGain.connect(ctx.destination);
+  // fade in gently
+  masterGain.gain.setValueAtTime(0, ctx.currentTime);
+  masterGain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 3);
 
-  const breath = new THREE.Audio(listener);
-  breath.setBuffer(breathBuffer(ctx));
-  breath.setLoop(true);
-  breath.setVolume(0.2);
-  breath.play();
+  // Deep 60Hz rumble — the core drone
+  const osc1 = ctx.createOscillator();
+  osc1.type = "sine";
+  osc1.frequency.value = 60;
+  const g1 = ctx.createGain();
+  g1.gain.value = 0.5;
+  osc1.connect(g1).connect(masterGain);
+  osc1.start();
+  droneNodes.push(osc1, g1);
 
-  musicBox = new THREE.Audio(listener);
-  musicBox.setBuffer(musicBoxBuffer(ctx));
-  musicBox.setVolume(0.5);
-  return listener;
+  // Sub-harmonic at 30Hz for extra depth
+  const osc2 = ctx.createOscillator();
+  osc2.type = "sine";
+  osc2.frequency.value = 30;
+  const g2 = ctx.createGain();
+  g2.gain.value = 0.3;
+  osc2.connect(g2).connect(masterGain);
+  osc2.start();
+  droneNodes.push(osc2, g2);
+
+  // Slow detuned fifth at 90Hz for tension
+  const osc3 = ctx.createOscillator();
+  osc3.type = "triangle";
+  osc3.frequency.value = 90;
+  const g3 = ctx.createGain();
+  g3.gain.value = 0.08;
+  // slow wobble on the fifth
+  const lfo = ctx.createOscillator();
+  lfo.type = "sine";
+  lfo.frequency.value = 0.08;
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.value = 0.04;
+  lfo.connect(lfoGain).connect(g3.gain);
+  lfo.start();
+  osc3.connect(g3).connect(masterGain);
+  osc3.start();
+  droneNodes.push(osc3, g3, lfo, lfoGain);
+
+  // Low-pass filter on a brownish noise floor for "industrial room tone"
+  const bufferSize = ctx.sampleRate * 4;
+  const noiseBuf = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = noiseBuf.getChannelData(0);
+  let lastOut = 0;
+  for (let i = 0; i < bufferSize; i++) {
+    const white = Math.random() * 2 - 1;
+    lastOut = (lastOut + 0.02 * white) / 1.02;
+    data[i] = lastOut * 3.5;
+  }
+  const noiseSrc = ctx.createBufferSource();
+  noiseSrc.loop = true;
+  noiseSrc.buffer = noiseBuf;
+  const noiseFilter = ctx.createBiquadFilter();
+  noiseFilter.type = "lowpass";
+  noiseFilter.frequency.value = 120;
+  noiseFilter.Q.value = 0.5;
+  const noiseGain = ctx.createGain();
+  noiseGain.gain.value = 0.06;
+  noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
+  void noiseSrc.start();
+  droneNodes.push(noiseSrc, noiseFilter, noiseGain);
+
+  return ctx;
 }
 
-export function getListener() {
-  return listener;
+export function stopAudio() {
+  if (!ctx || !masterGain) return;
+  masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1);
+  setTimeout(() => {
+    droneNodes.forEach((n) => {
+      try {
+        if ("stop" in n && typeof n.stop === "function") n.stop();
+      } catch {
+        // already stopped
+      }
+      try {
+        n.disconnect();
+      } catch {
+        // already disconnected
+      }
+    });
+    droneNodes = [];
+    void ctx?.close();
+    ctx = null;
+    masterGain = null;
+  }, 1100);
 }
 
-export function playMusicBox(rate = 1) {
-  if (!musicBox) return;
-  if (musicBox.isPlaying) musicBox.stop();
-  musicBox.setPlaybackRate(rate);
-  musicBox.play();
+export function getAudioContext() {
+  return ctx;
 }

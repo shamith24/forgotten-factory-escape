@@ -100,33 +100,33 @@ export function PorcelainDoll() {
     // head slowly turns toward camera during the close-up
     if (head.current && cine.t > 5) head.current.rotation.y = THREE.MathUtils.lerp(head.current.rotation.y, 0.9, 0.02);
   });
-  const skin = <meshStandardMaterial color="#f3ebe1" roughness={0.18} metalness={0.05} />;
+  const skin = <meshStandardMaterial color="#8a7a6a" roughness={0.5} metalness={0.2} />;
   return (
     <group position={[-0.35, 0.82, 0.3]} rotation-y={0.4} scale={1.8}>
-      <pointLight position={[0.15, 0.35, 0.25]} color="#ffd9b0" intensity={cine.t >= 0 ? 0.8 : 0.15} distance={1.5} />
+      <pointLight position={[0.15, 0.35, 0.25]} color="#aa8866" intensity={cine.t >= 0 ? 0.3 : 0.05} distance={1.5} />
       <mesh position={[0, 0.07, 0]} castShadow>
         <coneGeometry args={[0.07, 0.15, 12]} />
-        <meshStandardMaterial color="#7b2232" roughness={0.9} />
+        <meshStandardMaterial color="#4a1018" roughness={0.9} metalness={0.3} />
       </mesh>
       <mesh ref={head} position={[0, 0.19, 0]} castShadow>
         <sphereGeometry args={[0.05, 16, 14]} />
         {skin}
         <mesh position={[-0.017, 0.008, 0.044]}>
           <sphereGeometry args={[0.009, 8, 8]} />
-          <meshStandardMaterial color="#05050a" roughness={0.1} />
+          <meshStandardMaterial color="#05050a" roughness={0.2} metalness={0.3} />
         </mesh>
         <mesh position={[0.017, 0.008, 0.044]}>
           <sphereGeometry args={[0.009, 8, 8]} />
-          <meshStandardMaterial color="#05050a" roughness={0.1} />
+          <meshStandardMaterial color="#05050a" roughness={0.2} metalness={0.3} />
         </mesh>
         <mesh position={[0, -0.022, 0.044]}>
           <sphereGeometry args={[0.006, 6, 6]} />
-          <meshStandardMaterial color="#a0303a" />
+          <meshStandardMaterial color="#601820" />
         </mesh>
         {/* hair */}
         <mesh position={[0, 0.02, -0.01]} scale={[1.1, 0.9, 1.1]}>
           <sphereGeometry args={[0.052, 14, 10, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-          <meshStandardMaterial color="#2a1608" roughness={1} />
+          <meshStandardMaterial color="#1a0e04" roughness={1} metalness={0.3} />
         </mesh>
       </mesh>
       {[-1, 1].map((s) => (
@@ -139,7 +139,7 @@ export function PorcelainDoll() {
   );
 }
 
-const FUR = "#2a4a9e";
+const FUR = "#1a2a4a";
 
 /** Multi-jointed furred arm that reaches in through the window once cine.t > 8.3. */
 export function CreatureArm() {
@@ -175,7 +175,7 @@ export function CreatureArm() {
       {Array.from({ length: 6 }).map((_, i) => (
         <mesh key={i} position={[Math.sin(i * 2.1) * r, Math.cos(i * 2.1) * r, -((i + 0.5) / 6) * len]} rotation={[i, i * 1.7, 0]}>
           <coneGeometry args={[r * 0.35, r * 0.9, 5]} />
-          <meshStandardMaterial color="#1f3a80" roughness={1} />
+          <meshStandardMaterial color="#0e1a30" roughness={1} metalness={0.4} />
         </mesh>
       ))}
     </>
@@ -183,7 +183,7 @@ export function CreatureArm() {
 
   return (
     <group ref={root} visible={false}>
-      <pointLight position={[0.4, 0.6, -1.8]} color="#9fb4ff" intensity={4} distance={4} />
+      <pointLight position={[0.4, 0.6, -1.8]} color="#4a5a8a" intensity={1.5} distance={3} />
       <group ref={j1}>
         {seg(0.9, 0.13)}
         <group ref={j2} position={[0, 0, -0.95]}>
@@ -208,7 +208,7 @@ export function CreatureArm() {
                   </mesh>
                   <mesh position={[0, -0.02, -0.3]} rotation-x={-Math.PI / 2 - 0.4}>
                     <coneGeometry args={[0.018, 0.09, 6]} />
-                    <meshStandardMaterial color="#d8d0b8" roughness={0.4} />
+                    <meshStandardMaterial color="#5a5240" roughness={0.6} metalness={0.3} />
                   </mesh>
                 </group>
               ))}
@@ -223,19 +223,19 @@ export function CreatureArm() {
 /** Broken window on the wall behind the player's start position. */
 export function BrokenWindow() {
   const p = WINDOW_POS;
-  const frame = "#2b2620";
+  const frame = "#1a1814";
   return (
     <group position={[p.x, p.y, p.z]} rotation-y={Math.PI}>
       {/* night outside */}
       <mesh position={[0, 0, -0.03]}>
         <planeGeometry args={[1.6, 1.2]} />
-        <meshBasicMaterial color="#0b1424" />
+        <meshBasicMaterial color="#020308" />
       </mesh>
       {[[0, 0.63, 1.75, 0.08], [0, -0.63, 1.75, 0.08], [-0.84, 0, 0.08, 1.3], [0.84, 0, 0.08, 1.3], [0, 0, 0.05, 1.2]].map(
         ([x = 0, y = 0, w = 0, h = 0], i) => (
           <mesh key={i} position={[x, y, 0.02]} castShadow>
             <boxGeometry args={[w, h, 0.08]} />
-            <meshStandardMaterial color={frame} roughness={0.9} />
+            <meshStandardMaterial color={frame} roughness={0.9} metalness={0.6} />
           </mesh>
         ),
       )}
@@ -243,10 +243,10 @@ export function BrokenWindow() {
       {[[-0.6, 0.45, 0.4], [0.55, -0.4, 2.5], [0.62, 0.42, 3.6], [-0.55, -0.45, 1.2]].map(([x = 0, y = 0, r = 0], i) => (
         <mesh key={i} position={[x, y, 0.01]} rotation-z={r}>
           <circleGeometry args={[0.2, 3]} />
-          <meshStandardMaterial color="#8fb3c9" transparent opacity={0.35} roughness={0.05} metalness={0.3} />
+          <meshStandardMaterial color="#2a3a4a" transparent opacity={0.2} roughness={0.1} metalness={0.5} />
         </mesh>
       ))}
-      <pointLight position={[0, 0, 0.6]} color="#7fa0ff" intensity={2.5} distance={5} decay={2} />
+      <pointLight position={[0, 0, 0.6]} color="#3a4a6a" intensity={0.8} distance={3} decay={2} />
     </group>
   );
 }

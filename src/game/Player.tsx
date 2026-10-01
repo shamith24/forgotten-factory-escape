@@ -4,8 +4,8 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 const SPEED = 2.6;
-const ROOM = 7.4; // half-size minus margin
-const DESK = { x: 1.5, z: 1.0 }; // desk half extents + player radius
+const ROOM = 7.4;
+const DESK = { x: 1.5, z: 1.0 };
 
 export function Player({ flashlightOn, onLock, disabled = false }: { flashlightOn: boolean; onLock: (l: boolean) => void; disabled?: boolean }) {
   const { camera } = useThree();
@@ -56,15 +56,16 @@ export function Player({ flashlightOn, onLock, disabled = false }: { flashlightO
     }
     p.y = 1.65 + Math.sin(bob.current) * 0.035;
 
-    // flashlight follows camera with slight sway
+    // Narrow, dim flashlight follows camera with slight sway
     if (light.current) {
       light.current.position.copy(p).add(right.clone().multiplyScalar(0.2)).add(new THREE.Vector3(0, -0.15, 0));
       const dir = new THREE.Vector3();
       camera.getWorldDirection(dir);
       target.current.position.copy(p).add(dir.multiplyScalar(5));
       target.current.updateMatrixWorld();
-      const flick = Math.random() > 0.985 ? 0.3 : 1;
-      light.current.intensity = flashlightOn ? 38 * flick : 0;
+      // Subtle flicker — dim and unreliable
+      const flick = Math.random() > 0.98 ? 0.4 : 1;
+      light.current.intensity = flashlightOn ? 22 * flick : 0;
     }
     void state;
   });
@@ -76,11 +77,12 @@ export function Player({ flashlightOn, onLock, disabled = false }: { flashlightO
       <spotLight
         ref={light}
         target={target.current}
-        angle={0.42}
-        penumbra={0.55}
-        distance={18}
-        decay={1.6}
-        color="#ffe9c4"
+        angle={0.32}
+        penumbra={0.7}
+        distance={14}
+        decay={1.8}
+        intensity={22}
+        color="#ffe6c0"
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
