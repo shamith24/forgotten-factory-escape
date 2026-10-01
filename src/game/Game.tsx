@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { Player } from "./Player";
 import { Room } from "./Room";
 import { BrokenWindow, CreatureArm, Cutscene, PorcelainDoll, type CinePhase } from "./Cutscene";
+import { startAudio } from "./audio";
 
 function PickupWatcher({ onNear, active }: { onNear: (n: boolean) => void; active: boolean }) {
   const { camera } = useThree();
@@ -28,7 +29,13 @@ export default function Game() {
   const [near, setNear] = useState(false);
   const [collected, setCollected] = useState(false);
   const [phase, setPhase] = useState<CinePhase | null>(null);
+  const [started, setStarted] = useState(false);
   const inCutscene = collected;
+
+  const handleStart = () => {
+    startAudio();
+    setStarted(true);
+  };
 
   useEffect(() => {
     if (inCutscene) return; // all controls disabled during cutscene
@@ -48,10 +55,9 @@ export default function Game() {
   return (
     <div className="fixed inset-0 bg-background">
       <Canvas shadows dpr={[1, 1.5]} camera={{ fov: 70, near: 0.05, far: 40 }} frameloop={ended ? "never" : "always"}>
-        <color attach="background" args={["#050403"]} />
-        <fog attach="fog" args={["#070605", 2, 14]} />
-        <ambientLight intensity={inCutscene ? 0.35 : 0.12} color="#6b7a8a" />
-        <hemisphereLight args={["#3a3f4a", "#1a120a", 0.15]} />
+        <color attach="background" args={["#000000"]} />
+        <fog attach="fog" args={["#000000", 1, 10]} />
+        <ambientLight intensity={inCutscene ? 0.08 : 0} color="#1a1a1a" />
         <Room collected={collected} />
         <PorcelainDoll />
         <BrokenWindow />
@@ -127,8 +133,8 @@ export default function Game() {
         </div>
       )}
 
-      {!locked && !inCutscene && (
-        <div className="pointer-events-none fixed inset-0 flex items-center justify-center bg-background/80">
+      {!started && !inCutscene && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
           <div className="max-w-md px-6 text-center">
             <p className="font-mono text-xs uppercase tracking-[0.4em] text-destructive">Jolly Toys Co. — Floor 2</p>
             <h1 className="mt-4 font-display text-6xl text-foreground">The Night Shift</h1>
@@ -137,8 +143,19 @@ export default function Game() {
               <p>Mouse — look · WASD — walk</p>
               <p>F — flashlight · E — interact · Esc — pause</p>
             </div>
-            <p className="mt-10 animate-pulse font-mono text-sm tracking-widest text-foreground">Click to enter</p>
+            <button
+              onClick={handleStart}
+              className="mt-10 border border-foreground/30 bg-black px-10 py-4 font-mono text-sm uppercase tracking-[0.3em] text-foreground transition-all hover:border-destructive hover:text-destructive hover:shadow-[0_0_20px_rgba(180,40,30,0.3)]"
+            >
+              Start Game
+            </button>
           </div>
+        </div>
+      )}
+
+      {started && !locked && !inCutscene && (
+        <div className="pointer-events-none fixed inset-0 flex items-center justify-center bg-black/60">
+          <p className="animate-pulse font-mono text-sm tracking-widest text-foreground">Click to look around</p>
         </div>
       )}
     </div>

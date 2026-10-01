@@ -57,9 +57,9 @@ function FlickerBulb({ p }: { p: [number, number, number] }) {
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
     const on = Math.sin(t * 13) + Math.sin(t * 7.3) + Math.sin(t * 2.1) > 0.6;
-    const v = on ? 2.2 : 0.05;
+    const v = on ? 0.8 : 0.02;
     if (l.current) l.current.intensity = v;
-    if (m.current) m.current.emissiveIntensity = on ? 3 : 0.1;
+    if (m.current) m.current.emissiveIntensity = on ? 1.5 : 0.05;
   });
   return (
     <group position={p}>
@@ -103,12 +103,12 @@ function Keycard({ collected }: { collected: boolean }) {
 
 export function Room({ collected }: { collected: boolean }) {
   const mats = useMemo(() => {
-    const wall = new THREE.MeshStandardMaterial({ map: wallTex(), roughness: 0.95 });
-    const floor = new THREE.MeshStandardMaterial({ map: floorTex(), roughness: 0.8 });
-    const wood = new THREE.MeshStandardMaterial({ map: woodTex(), roughness: 0.85 });
-    const metal = new THREE.MeshStandardMaterial({ map: metalTex(), roughness: 0.55, metalness: 0.6 });
-    const ceiling = new THREE.MeshStandardMaterial({ color: "#26241f", roughness: 1 });
-    const cardboard = new THREE.MeshStandardMaterial({ color: "#7a5a36", roughness: 1 });
+    const wall = new THREE.MeshStandardMaterial({ map: wallTex(), roughness: 0.98, metalness: 0.05 });
+    const floor = new THREE.MeshStandardMaterial({ map: floorTex(), roughness: 0.7, metalness: 0.4 });
+    const wood = new THREE.MeshStandardMaterial({ map: woodTex(), roughness: 0.9 });
+    const metal = new THREE.MeshStandardMaterial({ map: metalTex(), roughness: 0.6, metalness: 0.7 });
+    const ceiling = new THREE.MeshStandardMaterial({ color: "#0a0907", roughness: 1 });
+    const cardboard = new THREE.MeshStandardMaterial({ color: "#3a2a18", roughness: 1 });
     const poster = new THREE.MeshStandardMaterial({ map: posterTex(), roughness: 1 });
     return { wall, floor, wood, metal, ceiling, cardboard, poster };
   }, []);
@@ -274,7 +274,7 @@ export function Room({ collected }: { collected: boolean }) {
         <planeGeometry args={[0.5, 0.15]} />
         <meshStandardMaterial color="#300" emissive="#ff1a0a" emissiveIntensity={1.4} />
       </mesh>
-      <pointLight position={[0, 2.3, 7.4]} color="#ff2a10" intensity={1.2} distance={4} />
+      <pointLight position={[0, 2.3, 7.4]} color="#ff2a10" intensity={0.4} distance={3} />
 
       <FlickerBulb p={[-4.5, 2.6, -4]} />
       <FlickerBulb p={[4, 2.7, 4.5]} />

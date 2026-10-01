@@ -90,13 +90,13 @@ export function startAudio() {
   const hum = new THREE.Audio(listener);
   hum.setBuffer(humBuffer(ctx));
   hum.setLoop(true);
-  hum.setVolume(0.18);
+  hum.setVolume(0.12);
   hum.play();
 
   const breath = new THREE.Audio(listener);
   breath.setBuffer(breathBuffer(ctx));
   breath.setLoop(true);
-  breath.setVolume(0.35);
+  breath.setVolume(0.2);
   breath.play();
 
   musicBox = new THREE.Audio(listener);
