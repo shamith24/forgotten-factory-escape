@@ -8,7 +8,7 @@ export const cine = { t: -1 };
 export type CinePhase = "intro" | "doll" | "turn" | "arm" | "fade" | "end";
 
 const DESK = new THREE.Vector3(0, 0.8, 0);
-const DOLL = new THREE.Vector3(-0.35, 0.95, 0.3);
+const DOLL = new THREE.Vector3(-0.35, 1.1, 0.3);
 export const WINDOW_POS = new THREE.Vector3(-3, 1.9, 7.95);
 
 const smooth = (x: number) => {
@@ -26,7 +26,7 @@ export function Cutscene({ onPhase }: { onPhase: (p: CinePhase) => void }) {
     const dir = new THREE.Vector3();
     camera.getWorldDirection(dir);
     start.current = { pos: camera.position.clone(), look: camera.position.clone().add(dir.multiplyScalar(2)) };
-    cine.t = 0;
+    cine.t = Number(new URLSearchParams(location.search).get("cinetest")) || 0;
     return () => {
       cine.t = -1;
     };
@@ -48,7 +48,7 @@ export function Cutscene({ onPhase }: { onPhase: (p: CinePhase) => void }) {
     const look = new THREE.Vector3();
 
     const wide = new THREE.Vector3(4.2, 4.6, 4.2);
-    const dollCam = new THREE.Vector3(-1.1, 1.25, 1.2);
+    const dollCam = new THREE.Vector3(-0.85, 1.3, 0.95);
     const turnCam = new THREE.Vector3(-1.2, 1.5, 1.6);
 
     if (t < 3) {
@@ -102,7 +102,8 @@ export function PorcelainDoll() {
   });
   const skin = <meshStandardMaterial color="#f3ebe1" roughness={0.18} metalness={0.05} />;
   return (
-    <group position={[-0.35, 0.82, 0.3]} rotation-y={0.4}>
+    <group position={[-0.35, 0.82, 0.3]} rotation-y={0.4} scale={1.8}>
+      <pointLight position={[0.15, 0.35, 0.25]} color="#ffd9b0" intensity={cine.t >= 0 ? 0.8 : 0.15} distance={1.5} />
       <mesh position={[0, 0.07, 0]} castShadow>
         <coneGeometry args={[0.07, 0.15, 12]} />
         <meshStandardMaterial color="#7b2232" roughness={0.9} />
