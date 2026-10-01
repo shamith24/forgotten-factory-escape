@@ -7,7 +7,7 @@ const SPEED = 2.6;
 const ROOM = 7.4; // half-size minus margin
 const DESK = { x: 1.5, z: 1.0 }; // desk half extents + player radius
 
-export function Player({ flashlightOn, onLock }: { flashlightOn: boolean; onLock: (l: boolean) => void }) {
+export function Player({ flashlightOn, onLock, disabled = false }: { flashlightOn: boolean; onLock: (l: boolean) => void; disabled?: boolean }) {
   const { camera } = useThree();
   const keys = useRef<Record<string, boolean>>({});
   const light = useRef<THREE.SpotLight>(null);
@@ -28,6 +28,10 @@ export function Player({ flashlightOn, onLock }: { flashlightOn: boolean; onLock
   }, [camera]);
 
   useFrame((state, raw) => {
+    if (disabled) {
+      if (light.current) light.current.intensity = 0;
+      return;
+    }
     const dt = Math.min(raw, 0.05);
     const k = keys.current;
     const fwd = new THREE.Vector3();
@@ -67,7 +71,7 @@ export function Player({ flashlightOn, onLock }: { flashlightOn: boolean; onLock
 
   return (
     <>
-      <PointerLockControls onLock={() => onLock(true)} onUnlock={() => onLock(false)} />
+      {!disabled && <PointerLockControls onLock={() => onLock(true)} onUnlock={() => onLock(false)} />}
       <primitive object={target.current} />
       <spotLight
         ref={light}
