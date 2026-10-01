@@ -26,7 +26,7 @@ export function Cutscene({ onPhase }: { onPhase: (p: CinePhase) => void }) {
     const dir = new THREE.Vector3();
     camera.getWorldDirection(dir);
     start.current = { pos: camera.position.clone(), look: camera.position.clone().add(dir.multiplyScalar(2)) };
-    cine.t = Number(new URLSearchParams(location.search).get("cinetest")) || 0;
+    cine.t = 0;
     return () => {
       cine.t = -1;
     };

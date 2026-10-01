@@ -43,7 +43,6 @@ export default function Game() {
     return () => window.removeEventListener("keydown", h);
   }, [near, inCutscene]);
 
-  useEffect(() => { if (location.search.includes("cinetest")) setCollected(true); }, []);
   const ended = phase === "end";
 
   return (
@@ -113,8 +112,8 @@ export default function Game() {
 
       {ended && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-background px-6 text-center">
-          <h1 className="glitch font-display text-5xl text-foreground md:text-7xl" data-text="PLAYTIME">
-            PLAYTIME
+          <h1 className="glitch font-display text-5xl text-foreground md:text-7xl" data-text="PLAYTIME:">
+            PLAYTIME:
           </h1>
           <p className="glitch mt-4 font-mono text-lg tracking-[0.5em] text-destructive md:text-2xl" data-text="INSIDE THE UNKNOWN">
             INSIDE THE UNKNOWN
