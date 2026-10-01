@@ -91,3 +91,16 @@ export const DIALOGUE_SCRIPT: DialogueLine[] = [
 export function getLinesForTrigger(trigger: DialogueTrigger): DialogueLine[] {
   return DIALOGUE_SCRIPT.filter((l) => l.trigger === trigger);
 }
+
+/**
+ * Uses the browser's built-in Text-to-Speech engine to speak a line aloud.
+ * Lowered pitch and slower rate for a dark, scary protagonist tone.
+ */
+export function speakDialogue(text: string) {
+  if (typeof window === "undefined" || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.pitch = 0.8;
+  utterance.rate = 0.9;
+  window.speechSynthesis.speak(utterance);
+}

@@ -63,9 +63,9 @@ export function Player({ flashlightOn, onLock, disabled = false }: { flashlightO
       camera.getWorldDirection(dir);
       target.current.position.copy(p).add(dir.multiplyScalar(5));
       target.current.updateMatrixWorld();
-      // Subtle flicker — dim and unreliable
+      // Subtle flicker
       const flick = Math.random() > 0.98 ? 0.4 : 1;
-      light.current.intensity = flashlightOn ? 22 * flick : 0;
+      light.current.intensity = flashlightOn ? 5000 * flick : 0;
     }
     void state;
   });
@@ -77,11 +77,11 @@ export function Player({ flashlightOn, onLock, disabled = false }: { flashlightO
       <spotLight
         ref={light}
         target={target.current}
-        angle={0.32}
-        penumbra={0.7}
-        distance={14}
-        decay={1.8}
-        intensity={22}
+        angle={0.45}
+        penumbra={0.6}
+        distance={100}
+        decay={2}
+        intensity={5000}
         color="#ffe6c0"
         castShadow
         shadow-mapSize-width={1024}

@@ -5,7 +5,7 @@ import { Player } from "./Player";
 import { Room } from "./Room";
 import { BrokenWindow, CreatureArm, Cutscene, PorcelainDoll, type CinePhase } from "./Cutscene";
 import { startAudio } from "./audio";
-import { getLinesForTrigger, type DialogueLine } from "./dialogue";
+import { getLinesForTrigger, speakDialogue, type DialogueLine } from "./dialogue";
 
 function PickupWatcher({ onNear, active }: { onNear: (n: boolean) => void; active: boolean }) {
   const { camera } = useThree();
@@ -36,6 +36,7 @@ export default function Game() {
 
   const showLine = useCallback((line: DialogueLine) => {
     setActiveLine(line);
+    speakDialogue(line.text);
   }, []);
 
   const handleStart = () => {
@@ -86,7 +87,8 @@ export default function Game() {
         <color attach="background" args={["#000000"]} />
         {/* Thick volumetric horror fog */}
         <fogExp2 attach="fog" args={["#050505", 0.12]} />
-        {/* NO ambient or global lights — flashlight is the ONLY light source */}
+        {/* Dim ambient so player can faintly see silhouettes, flashlight is primary */}
+        <ambientLight intensity={0.5} color="#111111" />
         {inCutscene && <ambientLight intensity={0.03} color="#1a1a2a" />}
         <Room collected={collected} />
         <PorcelainDoll />
