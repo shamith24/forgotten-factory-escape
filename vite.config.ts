@@ -6,7 +6,19 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// The devtools source-injection adds `data-tsd-source` to every JSX element. React Three Fiber
+// treats dashed props as nested paths and crashes, so strip it from 3D scene files.
+const stripTsdSourceFor3D = {
+  name: "strip-tsd-source-3d",
+  enforce: "pre" as const,
+  transform(code: string, id: string) {
+    if (!id.includes("/src/game/") || !code.includes("data-tsd-source")) return null;
+    return { code: code.replace(/\s+data-tsd-source=(?:"[^"]*"|\{[^}]*\})/g, ""), map: null };
+  },
+};
+
 export default defineConfig({
+  vite: { plugins: [stripTsdSourceFor3D] },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
