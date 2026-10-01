@@ -9,3 +9,4 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 - Game code lives in src/game/ and mounts on the client-only / route (ssr:false) — WebGL can't render on the server.
+- Dev-only devtools JSX source attributes are stripped from src/game/ in vite.config.ts — R3F crashes on dashed props.
