@@ -139,7 +139,7 @@ export function PorcelainDoll() {
   );
 }
 
-const FUR = "#2f5bd3";
+const FUR = "#2a4a9e";
 
 /** Multi-jointed furred arm that reaches in through the window once cine.t > 8.3. */
 export function CreatureArm() {
@@ -158,7 +158,7 @@ export function CreatureArm() {
     const k = smooth((t - 8.3) / 3);
     const w = clock.elapsedTime;
     // slide in through the window (window faces -z into the room)
-    root.current.position.set(WINDOW_POS.x, WINDOW_POS.y - 0.05, WINDOW_POS.z + 1.4 - k * 2.2);
+    root.current.position.set(WINDOW_POS.x, WINDOW_POS.y - 0.05, WINDOW_POS.z + 1.4 - k * 1.5);
     if (j1.current) j1.current.rotation.x = 0.25 - k * 0.35 + Math.sin(w * 3) * 0.04;
     if (j2.current) j2.current.rotation.x = 0.7 - k * 0.95 + Math.sin(w * 4) * 0.05;
     if (j3.current) j3.current.rotation.x = 0.6 - k * 0.9;
@@ -175,7 +175,7 @@ export function CreatureArm() {
       {Array.from({ length: 6 }).map((_, i) => (
         <mesh key={i} position={[Math.sin(i * 2.1) * r, Math.cos(i * 2.1) * r, -((i + 0.5) / 6) * len]} rotation={[i, i * 1.7, 0]}>
           <coneGeometry args={[r * 0.35, r * 0.9, 5]} />
-          <meshStandardMaterial color="#244aaf" roughness={1} />
+          <meshStandardMaterial color="#1f3a80" roughness={1} />
         </mesh>
       ))}
     </>
