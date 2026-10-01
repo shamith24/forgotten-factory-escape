@@ -8,3 +8,4 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+- Game code lives in src/game/ and mounts on the client-only / route (ssr:false) — WebGL can't render on the server.
